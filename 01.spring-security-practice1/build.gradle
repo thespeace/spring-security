@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    // spring boot version 2.5.2
+    id 'org.springframework.boot' version '2.5.2'
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+}
+
+group = 'thespeace'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Web MVC 추가
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Security 추가
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    // Thymeleaf 에서 SpringSecurity를 Integration
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    //Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // H2
+    runtimeOnly 'com.h2database:h2'
+
+    // Starter Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Security Test
+    testImplementation 'org.springframework.security:spring-security-test'
+    // Junit Test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
