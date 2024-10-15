@@ -1,6 +1,8 @@
 package thespeace.practice.spring.security.notice;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import thespeace.practice.spring.security.note.NoteRegisterDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,7 @@ public class NoticeController {
      */
     @GetMapping
     public String getNotice(Model model) {
+        SecurityContext securityContext = SecurityContextHolder.getContext(); //SecurityContext 내용 확인.
         List<Notice> notices = noticeService.findAll();
         model.addAttribute("notices", notices);
         return "notice/index";
