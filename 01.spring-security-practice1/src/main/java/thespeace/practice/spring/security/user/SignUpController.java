@@ -1,6 +1,8 @@
 package thespeace.practice.spring.security.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +25,7 @@ public class SignUpController {
      */
     @GetMapping
     public String signup() {
+        SecurityContext securityContext = SecurityContextHolder.getContext(); //breakpoint check하여 context 확인해보기.
         return "signup";
     }
 
