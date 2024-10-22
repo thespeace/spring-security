@@ -12,7 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import thespeace.practice.spring.security.filter.StopwatchFilter;
+import thespeace.practice.spring.security.filter.TesterAuthenticationFilter;
 import thespeace.practice.spring.security.user.User;
 import thespeace.practice.spring.security.user.UserService;
 
@@ -36,6 +40,18 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //stopwatch filter 추가
+        http.addFilterBefore(
+                new StopwatchFilter(),
+                WebAsyncManagerIntegrationFilter.class
+        );
+
+        //tester authentication filter 추가
+        http.addFilterBefore(
+                new TesterAuthenticationFilter(this.authenticationManager()),
+                UsernamePasswordAuthenticationFilter.class
+        );
+
         // basic authentication
 //        http.httpBasic().disable(); // basic authentication filter 비활성화
         http.httpBasic(); // basic authentication filter 활성화
