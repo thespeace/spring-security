@@ -10,6 +10,10 @@ import java.util.Random;
 
 /**
  * <h1>JWT Key를 제공하고 조회.</h1>
+ * <ul>
+ *     <li>JWT Secret Key를 관리하고 제공</li>
+ *     <li>key Rolling을 지원</li>
+ * </ul>
  */
 public class JwtKey {
 

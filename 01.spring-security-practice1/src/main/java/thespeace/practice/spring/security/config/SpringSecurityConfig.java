@@ -10,14 +10,20 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import thespeace.practice.spring.security.filter.StopwatchFilter;
 import thespeace.practice.spring.security.filter.TesterAuthenticationFilter;
+import thespeace.practice.spring.security.jwt.JwtAuthenticationFilter;
+import thespeace.practice.spring.security.jwt.JwtAuthorizationFilter;
+import thespeace.practice.spring.security.jwt.JwtProperties;
 import thespeace.practice.spring.security.user.User;
+import thespeace.practice.spring.security.user.UserRepository;
 import thespeace.practice.spring.security.user.UserService;
 
 /**
@@ -30,6 +36,7 @@ import thespeace.practice.spring.security.user.UserService;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     /**
      * <h2>Security 상세 설정 정의</h2>
@@ -41,28 +48,42 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //stopwatch filter 추가
-        http.addFilterBefore(
-                new StopwatchFilter(),
-                WebAsyncManagerIntegrationFilter.class
-        );
+//        http.addFilterBefore(
+//                new StopwatchFilter(),
+//                WebAsyncManagerIntegrationFilter.class
+//        );
 
         //tester authentication filter 추가
-        http.addFilterBefore(
-                new TesterAuthenticationFilter(this.authenticationManager()),
-                UsernamePasswordAuthenticationFilter.class
-        );
+//        http.addFilterBefore(
+//                new TesterAuthenticationFilter(this.authenticationManager()),
+//                UsernamePasswordAuthenticationFilter.class
+//        );
 
         // basic authentication
 //        http.httpBasic().disable(); // basic authentication filter 비활성화
-        http.httpBasic(); // basic authentication filter 활성화
+        http.httpBasic().disable(); // basic authentication filter 활성화
         //csrf
-        http.csrf();
+        http.csrf().disable();
         //remember-me
-        http.rememberMe();
+        http.rememberMe().disable();
         //anonymous
-        http.anonymous();
+//        http.anonymous();
 //        http.anonymous().principal("anonymousUser");
 //        http.anonymous().principal(new User());
+
+        // session -> token(JWT) : stateless,
+        http.sessionManagement()
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        // jwt filter
+        http.addFilterBefore(
+                new JwtAuthenticationFilter(authenticationManager()),
+                UsernamePasswordAuthenticationFilter.class
+        ).addFilterBefore(
+                new JwtAuthorizationFilter(userRepository),
+                BasicAuthenticationFilter.class
+        );
+
         //authorization
         http.authorizeRequests()
                 // "/"와 "/home"은 모두에게 허용
@@ -81,13 +102,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         // logout
         http.logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/");
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies(JwtProperties.COOKIE_NAME);
     }
 
     @Override
     public void configure(WebSecurity web) {
         // 정적 리소스 spring security 대상에서 제외
-        web.ignoring().antMatchers("/images/**", "/css/**"); // 아래 코드와 같은 코드.
+//        web.ignoring().antMatchers("/images/**", "/css/**"); // 아래 코드와 같은 코드.
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 

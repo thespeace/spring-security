@@ -9,6 +9,9 @@ import thespeace.practice.spring.security.user.User;
 import java.security.Key;
 import java.util.Date;
 
+/**
+ * <h1>JWT 토큰을 생성하거나 Parsing하는 메서드를 제공</h1>
+ */
 public class JwtUtils {
 
     /**
